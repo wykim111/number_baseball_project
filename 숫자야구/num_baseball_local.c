@@ -83,7 +83,7 @@ int input(char* user)
 			}
 		}
 		if (sameflag == 1)
-			return 0;
+			break;
 	}
 
 	if (sameflag == 1)//다시 입력을 받음
