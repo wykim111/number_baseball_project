@@ -1,3 +1,16 @@
+/*
+	1. com이 입력된 랜덤 수 저장
+	2. com에 저장된 랜덤 숫자가 같은 경우
+	   2-1) 현재 인덱스를 증가시키지 않고 그대로 유지하여 다시 랜덤 숫자 저장
+	3. user와 com이 입력된 숫자 비교
+	  3-1) user와 com이 입력된 숫자가 같은 경우
+	      3-1-1) 해당 인덱스(위치)가 같으면, strike 카운트
+	      3-1-2) 해당 인덱스(위치)가 다르면, ball 카운트
+	      3-1-3) flag를 true로 설정(out이 아니라는 의미)
+	 3-2) user와 com이 입력된 숫자가 없는 경우
+	     3-2-1) 3-1-3)에서의 flag가 false(default)인 경우 out   
+
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -6,8 +19,8 @@
 #define TRUE 1
 #define FALSE 0
 
-//���� �Ҵ�� �����ŭ Ž��
-//���� ���ڸ� 1 ����
+//현재 할당된 사이즈만큼 탐색
+//같은 숫자면 1 리턴
 int check_same(char*arr, int size, char n)
 {
 	for (int i = 0; i < size; i++)
@@ -26,7 +39,7 @@ void debug_comp(char* arr, int size)
 {
 	for (int i = 0; i < size; i++)
 	{
-		printf("%c ", arr[i]);//��ǻ�Ͱ� ������ ��
+		printf("%c ", arr[i]);//컴퓨터가 설정한 수
 	}
 	printf("\n");
 }
@@ -41,10 +54,10 @@ void random_com(char* comp)
 	for (i = 0; i < 3; i++)
 	{
 		comp[i] = (rand() % 10) + '0';
-		//�ߺ��Ǹ� ��ŵ�ϰ� �ٽ� �������� �Ҵ�
+		//중복되면 스킵하고 다시 랜덤숫자 할당
 		if (check_same(comp, i, comp[i]) == 1)
 		{
-			i = i - 1;// for���� ������ i++ ������ ���⼭ i-1�� �������� �ٽ� �Ҵ��ϵ��� ��
+			i = i - 1;// for문의 증감식 i++ 때문에 여기서 i-1로 감소히여 다시 할당하도록 함
 			continue;
 		}
 
@@ -52,13 +65,13 @@ void random_com(char* comp)
 	comp[i] = '\0';
 }
 //input
-//���� �����Ͱ� ������ �ٽ� �Է�
+//같은 데이터가 들어오면 다시 입력
 int input(char* user)
 {
 	int strLen = 0;
 	int i = 0,j=0;
 
-	printf("���� �Է�(3�ڸ����� �ٿ��� �Է�) ex.123\n");
+	printf("숫자 입력(3자리까지 붙여서 입력) ex.123\n");
 	
 	memset(user, 0, sizeof(user));
 	scanf("%s", user);
@@ -66,19 +79,19 @@ int input(char* user)
 	strLen = strlen(user);
 	if (strLen != 3)
 	{
-		printf("3�ڸ����� �Է����ּ��� ex) 123");
+		printf("3자리까지 입력해주세요 ex) 123");
 		
 	}
 
 	int sameflag = 0;
 	for (i = 0; i < 3; i++)
 	{
-		//�ߺ� üũ
+		//중복 체크
 		for (j = i + 1; j < 3; j++)
 		{
 			if (user[i] == user[j])
 			{
-				sameflag = 1; //�Էµ� �� �߿��� �ߺ��� ���
+				sameflag = 1; //입력된 수 중에서 중복된 경우
 				break;
 			}
 		}
@@ -86,9 +99,9 @@ int input(char* user)
 			break;
 	}
 
-	if (sameflag == 1)//�ٽ� �Է��� ����
+	if (sameflag == 1)//다시 입력을 받음
 	{
-		printf("�ߺ��� ���ڰ� �ֽ��ϴ�.\n(0~9)���̿� ���� ��ġ�� �ʰ� �Է����ּ���\n");
+		printf("중복된 숫자가 있습니다.\n(0~9)사이에 수를 겹치지 않게 입력해주세요\n");
 		return 0;
 	}
 
@@ -123,21 +136,21 @@ int main()
 			continue;
 		}
 
-		//printf("�Է� ���� : %c %c %c\n", user[0], user[1], user[2]);
-		int match_flag = 0;//�̰� ������ user�� ������ ����ŭ outī��Ʈ�� �þ����,computer�� �����Ͱ� user �����Ϳ� ��� ������ flag = 1�� ����
+		//printf("입력 숫자 : %c %c %c\n", user[0], user[1], user[2]);
+		int match_flag = 0;//이게 없으면 user의 데이터 수만큼 out카운트가 늘어나버림,computer의 데이터가 user 데이터에 모두 없으면 flag = 1로 설정
 		for (i = 0; i < 3; i++) // computer
 		{
 			match_flag = 0;
 			for (int j = 0; j < 3; j++) // user
 			{
-				//���� ��ġ
+				//숫자 일치
 				if (comp[i] == user[j])
 				{
-					if (i == j)// �ڸ��� ��ġ
+					if (i == j)// 자릿수 일치
 					{
 						strike++;
 					}
-					else//�ڸ��� �ٸ�
+					else//자릿수 다름
 					{
 						ball++;
 					}
@@ -162,14 +175,14 @@ int main()
 
 		if (strike == 3)
 		{
-			printf("�õ�Ƚ�� = %d\n", cnt);
-			printf("������ϴ�!\n");
+			printf("시도횟수 = %d\n", cnt);
+			printf("맞췄습니다!\n");
 			break;
 		}
 		else
 		{
 			printf("strike(%d) ball(%d)  out(%d)\n", strike, ball, out);
-			printf("�ٽ� �õ����ּ���\n");
+			printf("다시 시도해주세요\n");
 			cnt++;
 		}
 
